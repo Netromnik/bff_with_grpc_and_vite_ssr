@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.pytest_cache/
+
+# JavaScript/TypeScript
+dist/
+build/
+.venv/
+assets_compiled/
+node_modules/
+*.js.map
+*.ts.map
+*.log

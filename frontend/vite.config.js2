@@ -1,0 +1,53 @@
+// vite.config.js
+
+import { defineConfig } from "vite";
+import path from 'path';
+import fs from 'fs';
+
+function getAsset(input_assets_dir, output_assets_dir) {
+
+  // Получаем список директорий с ассетами
+  let assets_dirs = fs.readdirSync(input_assets_dir, (err, files) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    return files;
+  });
+
+  // Полный путь к каждой точке входа
+  let assets_collections_input = new Map();
+  let assets_collections_output = new Map();
+  for (let assets of assets_dirs) {
+    assets_collections_input.set(assets, path.resolve(input_assets_dir, assets, 'index.js'));
+    assets_collections_output.set(assets, path.resolve(output_assets_dir, assets, `index.js`));
+  }
+  return {assets_collections_input, assets_collections_output};
+}
+
+const root_dir = path.resolve(__dirname); 
+const src_dir = path.resolve(root_dir, "assets_source", );
+const compile_dir = path.resolve(root_dir, "assets_compiled",);
+
+const {assets_collections_input, assets_collections_output} = getAsset(
+  src_dir, compile_dir
+)
+
+console.log(assets_collections_input);
+export default defineConfig({
+  root: src_dir,
+  base: "/",
+  build: {
+    outDir: compile_dir,
+    manifest: "manifest.json",
+    // generate manifest.json in outDir
+    rollupOptions: {
+      input: Object.fromEntries(assets_collections_input),
+      output:{ 
+        entryFileNames: '[name]/index.js',
+        ...Object.fromEntries(assets_collections_output)},
+    },
+    copyPublicDir: false,
+    emptyOutDir: true,
+  }
+})
